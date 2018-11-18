@@ -8,12 +8,15 @@ import java.lang.StringBuffer;
 public class Graph {
 	// returns the name you have given to this graph library [1 point]
 	public String getLibraryName() {
+		return "Graphs Library";
 	}
 
 	// returns the current version number [1 point]
 	public String getLibraryVersion() {
+		return "V 1.0.0";
 	}
 
+	// TODO: Implement methods starting here
 	// the following method adds a vertex to the graph [2 points]
 	public void insertVertex(StringBuffer strUniqueID, StringBuffer strData) throws GraphException {
 	}
