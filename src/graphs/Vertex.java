@@ -8,11 +8,6 @@ public class Vertex {
 	protected int _nX, _nY; // Coordinates of vertex on some map. Assume 0,0 is bottom left.
 	
 	protected LinkedList<AdjacentVertexNode> _lstAdjacencyList;
-
-	public Vertex(StringBuffer vertexID, StringBuffer vertexData){
-		_strUniqueID = vertexID;
-		_strData = vertexData;
-	}
 	
 	public Vertex(String vertexID, String vertexData, int X, int Y){
 		_strUniqueID = new StringBuffer(vertexID);

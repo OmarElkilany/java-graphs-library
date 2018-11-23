@@ -9,7 +9,7 @@ import java.lang.StringBuffer;
 
 public class Graph {
 	
-	private static final int version = 1;
+	private static final String version = "1.0.0";
 	protected ArrayList<Vertex> _arrVertices;
 	
 	private ArrayList<Edge> _arrEdges;
@@ -27,7 +27,7 @@ public class Graph {
 	// TODO: Implement methods starting here
 	
 	// the following method adds a vertex to the graph [2 points]
-	public void insertVertex(StringBuffer strUniqueID, StringBuffer strData) throws GraphException {
+	public void insertVertex(String strUniqueID, String strData, int x, int y) throws GraphException {
 
 		// First ensure that the ID is unique
 		for(Vertex v : _arrVertices){
@@ -36,13 +36,13 @@ public class Graph {
 			}
 		}
 		
-		Vertex newVertex = new Vertex(strUniqueID, strData);
+		Vertex newVertex = new Vertex(strUniqueID, strData, x, y);
 		_arrVertices.add(newVertex);
 	}
 
 	// inserts an edge between 2 specified vertices [2 points]
-	public void insertEdge(StringBuffer strVertex1UniqueID, StringBuffer strVertex2UniqueID,
-			StringBuffer strEdgeUniqueID, StringBuffer strEdgeData, int nEdgeCost) throws GraphException {
+	public void insertEdge(String strVertex1UniqueID, String strVertex2UniqueID,
+			String strEdgeUniqueID, String strEdgeData, int nEdgeCost) throws GraphException {
 		
 		for(Edge edge : _arrEdges){
 			if(edge.getUniqueID().toString().equals(strEdgeUniqueID.toString())){
@@ -85,11 +85,11 @@ public class Graph {
 	}
 
 	// removes vertex and its incident edges [1 point]
-	public void removeVertex(StringBuffer strVertexUniqueID) throws GraphException {
+	public void removeVertex(String strVertexUniqueID) throws GraphException {
 		Vertex vertextoDelete = null;
 		
 		for(Vertex v : _arrVertices){
-			if(v.getUniqueID().toString().equals(strVertexUniqueID.toString())){
+			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
 				vertextoDelete = v;
 			}
 		}
@@ -114,7 +114,7 @@ public class Graph {
 	}
 
 	// removes an edge from the graph [1 point]
-	public void removeEdge(StringBuffer strEdgeUniqueID) throws GraphException {
+	public void removeEdge(String strEdgeUniqueID) throws GraphException {
 		Edge edgeToDelete = null;
 		
 		for(Edge edge: _arrEdges){
@@ -132,7 +132,7 @@ public class Graph {
 		
 		// Delete edge from first vertex
 		for(AdjacentVertexNode node: list){
-			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID.toString())){
+			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID)){
 				list.remove(node);
 				break;
 			}
@@ -142,7 +142,7 @@ public class Graph {
 		
 		// Delete edge from second vertex
 		for(AdjacentVertexNode node: list){
-			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID.toString())){
+			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID)){
 				list.remove(node);
 				break;
 			}
@@ -151,11 +151,11 @@ public class Graph {
 
 	// returns a vector of edges incident to vertex whose
 	// id is strVertexUniqueID [1 point]
-	public Vector<Edge> incidentEdges(StringBuffer strVertexUniqueID) throws GraphException {
+	public Vector<Edge> incidentEdges(String strVertexUniqueID) throws GraphException {
 		Vertex vertexInQuestion = null;
 		
 		for(Vertex v : _arrVertices){
-			if(v.getUniqueID().toString().equals(strVertexUniqueID.toString())){
+			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
 				vertexInQuestion = v;
 			}
 		}
@@ -185,7 +185,7 @@ public class Graph {
 
 	// returns an array of the two end vertices of the
 	// passed edge [1 point]
-	public Vertex[] endVertices(StringBuffer strEdgeUniqueID) throws GraphException {
+	public Vertex[] endVertices(String strEdgeUniqueID) throws GraphException {
 		Edge edgeInQuestion = null;
 		
 		for(Edge edge: _arrEdges){
@@ -206,7 +206,7 @@ public class Graph {
 	}
 
 	// returns the vertex opposite of another vertex [1 point]
-	public Vertex opposite(StringBuffer strVertexUniqueID, StringBuffer strEdgeUniqueID) throws GraphException {
+	public Vertex opposite(String strVertexUniqueID, String strEdgeUniqueID) throws GraphException {
 		Edge edgeInQuestion = null;
 		
 		for(Edge edge: _arrEdges){

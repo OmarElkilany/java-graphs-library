@@ -13,9 +13,9 @@ public class Edge {
 	public Vertex _verFirstVertex;
 	public Vertex _verSecondVertex;
 
-	public Edge(StringBuffer ID, StringBuffer EdgeData, int Cost, Vertex first, Vertex second){
-		_strUniqueID = ID;
-		_strData = EdgeData;
+	public Edge(String ID, String EdgeData, int Cost, Vertex first, Vertex second){
+		_strUniqueID = new StringBuffer(ID);
+		_strData = new StringBuffer(EdgeData);
 		_nEdgeCost = Cost;
 		
 		_verFirstVertex = first;
