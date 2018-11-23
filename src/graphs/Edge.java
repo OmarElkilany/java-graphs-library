@@ -2,12 +2,26 @@ package graphs;
 
 public class Edge {
 	protected StringBuffer _strUniqueID, // a unique id identifying edge
-			_strData; // data associated with this edge.
-	// Data could be name of edge or
-	// any meaningful property for
-	// an edge.
+						   
+						   _strData; 	 // data associated with this edge.
+										 // Data could be name of edge or
+										 // any meaningful property for
+										 // an edge.
+	
 	protected int _nEdgeCost; // cost of traversing this edge
+	
+	public Vertex _verFirstVertex;
+	public Vertex _verSecondVertex;
 
+	public Edge(StringBuffer ID, StringBuffer EdgeData, int Cost, Vertex first, Vertex second){
+		_strUniqueID = ID;
+		_strData = EdgeData;
+		_nEdgeCost = Cost;
+		
+		_verFirstVertex = first;
+		_verSecondVertex = second;
+	}
+	
 	public StringBuffer getUniqueID() {
 		return _strUniqueID;
 	}
