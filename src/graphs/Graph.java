@@ -219,7 +219,7 @@ public class Graph {
 			throw new GraphException("Edge not found!");
 		}
 		
-		if(!strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString()) && !strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString())){
+		if(!strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString()) && !strVertexUniqueID.equals(edgeInQuestion._verSecondVertex.getUniqueID().toString())){
 			throw new GraphException("Vertex not connected to Edge/doesn't exist");
 		}
 		
@@ -233,7 +233,36 @@ public class Graph {
 	// performs depth first search starting from passed vertex
 	// visitor is called on each vertex and edge visited. [12 points]
 	public void dfs(StringBuffer strStartVertexUniqueID, Visitor visitor) throws GraphException {
+		Vertex startVertex = null;
 		
+		for(Vertex v : _arrVertices){
+			if(v.getUniqueID().toString().equals(strStartVertexUniqueID)){
+				startVertex = v;
+			}
+		}
+		
+		if(startVertex == null){
+			throw new GraphException("Vertex not found!");
+		}
+		
+		dfsHelper(startVertex, visitor, new ArrayList<Vertex>());
+	}
+	
+	public void dfsHelper(Vertex vertex, Visitor visitor, ArrayList<Vertex> visitedVertices) {
+
+		for(AdjacentVertexNode node : vertex.getAdjacencyList()) {					// Traversing Through All Adjacent Vertices
+
+			if(!visitedVertices.contains(node.getAdjacentVertex())) {				// Checking Whether Vertex Is Visited Or Not
+
+				visitedVertices.add(vertex);										// Adding Vertex To Visited Vertices
+				visitor.visit(node.getAdjacentVertex());							// Calling Visitor For The Adjacent Vertex
+				visitor.visit(node.getConnectingEdge());							// Calling Visitor For The Connecting Edge
+
+				dfsHelper(node.getAdjacentVertex(), visitor, visitedVertices);		// Calling dfsHelper For The Current Vertex
+
+			}
+		}
+
 	}
 
 	// performs breadth first search starting from passed vertex
