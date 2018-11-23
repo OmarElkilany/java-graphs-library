@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.lang.StringBuffer;
+import java.lang.reflect.Array;
 
 // TODO: make sure all method signatures match those in the assignment document
 
@@ -268,6 +269,50 @@ public class Graph {
 	// performs breadth first search starting from passed vertex
 	// visitor is called on each vertex and edge visited. [17 points]
 	public void bfs(StringBuffer strStartVertexUniqueID, Visitor visitor) throws GraphException {
+		Vertex startVertex = null;
+		
+		for(Vertex v : _arrVertices){
+			if(v.getUniqueID().toString().equals(strStartVertexUniqueID)){
+				startVertex = v;
+			}
+		}
+		
+		if(startVertex == null){
+			throw new GraphException("Vertex not found!");
+		}
+		
+		ArrayList<Vertex> visitedVertices = new ArrayList<Vertex>();				// Array List For Visited Vertices
+		ArrayList<Vertex> verticesToBeVisited = new ArrayList<Vertex>();			// Array List For Vertices To Be Visited
+		ArrayList<Edge> edgesToBeVisited = new ArrayList<Edge>();					// Array List For Edges To Be Visited Through Visited Vertices
+		
+		verticesToBeVisited.add(startVertex);										// Adding Start Vertex To Visited Vertices (Redundant & Add Only To Satisfy The Condition)
+		edgesToBeVisited.add(new Edge(null, null, 0, null, null));					// Adding Redundant Edge To Avoid The Error In The First Iteration
+		
+		while(verticesToBeVisited.size() != 0) {									// Checking If There Is More Vertices Need To Be Visited
+
+			Vertex vertex = verticesToBeVisited.remove(0);							// Getting First Element In The Vertices To Be Visited
+			Edge edge = edgesToBeVisited.remove(0);									// Getting First Edge That Connects The Parent Vertex With The Child Vertex
+			
+			visitedVertices.add(vertex);											// Adding Vertex To The Visited Vertices
+
+			if(vertex != startVertex) {
+				visitor.visit(vertex);
+				visitor.visit(edge);
+			}
+			
+			for(AdjacentVertexNode node : vertex.getAdjacencyList()) {				// Traversing Through All Adjacent Vertices
+				
+				if(!visitedVertices.contains(node.getAdjacentVertex())) {			// Checking If Vertex Has Been Visited Or Not
+
+					verticesToBeVisited.add(node.getAdjacentVertex());				// Adding Vertex To Be Visited To The End Of The Array List
+					edgesToBeVisited.add(node.getConnectingEdge());					// Adding Edge That Connects Visited Vertex With Vertex To Be Visited
+
+				}
+				
+			}
+
+		}
+
 	}
 
 	// returns a path between start vertex and end vertex
