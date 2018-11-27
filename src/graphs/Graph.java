@@ -17,6 +17,11 @@ public class Graph {
 	
 	private ArrayList<Edge> _arrEdges;
 	
+	public Graph(){
+		_arrVertices = new ArrayList<>();
+		_arrEdges = new ArrayList<>();
+	}
+	
 	// returns the name you have given to this graph library [1 point]
 	public String getLibraryName() {
 		return "GUC Graphs Library";
@@ -26,15 +31,13 @@ public class Graph {
 	public String getLibraryVersion() {
 		return "Version: " +  version;
 	}
-
-	// TODO: Implement methods starting here
 	
 	// the following method adds a vertex to the graph [2 points]
 	public void insertVertex(String strUniqueID, String strData, int x, int y) throws GraphException {
 
 		// First ensure that the ID is unique
 		for(Vertex v : _arrVertices){
-			if(v.getUniqueID().equals(strUniqueID)){
+			if(strUniqueID.equals(v.getUniqueID().toString())){
 				throw new GraphException("Vertex ID already used!");
 			}
 		}
@@ -471,6 +474,10 @@ public class Graph {
 	// algorithm. Use X and Y attributes in each vertex. [30 points]
 	@SuppressWarnings("unchecked")
 	public Vertex[] closestPair() throws GraphException {
+		if(_arrVertices.size() < 2){
+			throw new GraphException("Not enough points");
+		}
+		
 		// Sort points according to X
 		ArrayList<Vertex> pointsXSorted = (ArrayList<Vertex>) _arrVertices.clone();
 		Collections.sort(pointsXSorted, Vertex.sortbyX);
