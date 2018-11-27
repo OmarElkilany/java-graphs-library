@@ -99,7 +99,7 @@ public class Graph {
 			throw new GraphException("Vertex to delete not found");
 		}
 		
-		// retrieve the nodes connected to the vertex to delete
+		// retrieve the nodes connected to the vertex-to-delete
 		LinkedList<AdjacentVertexNode> connectedNodes = vertexToDelete.getAdjacencyList();
 		
 		// loop over the connected nodes
@@ -112,13 +112,15 @@ public class Graph {
 			for(AdjacentVertexNode connectedNodeListEntry: connectedNodeList) {
 				
 				if(connectedNodeListEntry.getAdjacentVertex().equals(vertexToDelete)) {
-					// remove the edge from the edges Array list
-					_arrEdges.remove(connectedNodeListEntry.getConnectingEdge());
-					
 					// remove the node of the vertex-to-delete from the adjacency list of the connected node
 					connectedNodeList.remove(connectedNodeListEntry);
 				}
 			}
+		}
+		
+		// remove the edges from the edges Array list
+		for (AdjacentVertexNode node : connectedNodes) {
+			_arrEdges.remove(node.getConnectingEdge());
 		}
 		
 		// remove the vertex-to-delete
@@ -139,10 +141,11 @@ public class Graph {
 			throw new GraphException("Edge to delete not found!");
 		}
 		
+		// retrieve the adjacency list of the first vertex connected to the edge-to-delete
 		LinkedList<AdjacentVertexNode> list;
 		list = _arrVertices.get(_arrVertices.indexOf(edgeToDelete._verFirstVertex)).getAdjacencyList();
 		
-		// Delete edge from first vertex
+		// Delete the node from first vertex's adjacency list
 		for(AdjacentVertexNode node: list){
 			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID)){
 				list.remove(node);
@@ -150,9 +153,10 @@ public class Graph {
 			}
 		}
 		
+		// retrieve the adjacency list of the second vertex connected to the edge-to-delete
 		list = _arrVertices.get(_arrVertices.indexOf(edgeToDelete._verSecondVertex)).getAdjacencyList();
 		
-		// Delete edge from second vertex
+		// Delete the node from second vertex's adjacency list
 		for(AdjacentVertexNode node: list){
 			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID)){
 				list.remove(node);
