@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.lang.StringBuffer;
-import java.lang.reflect.Array;
 
 // TODO: make sure all method signatures match those in the assignment document
 
@@ -263,37 +262,54 @@ public class Graph {
 	// visitor is called on each vertex and edge visited. [12 points]
 	public void dfs(StringBuffer strStartVertexUniqueID, Visitor visitor) throws GraphException {
 		Vertex startVertex = null;
-		
-		// find the start vertex
-		for(Vertex v : _arrVertices){
-			if(v.getUniqueID().toString().equals(strStartVertexUniqueID)){
+
+		// clear meta-data and find the start vertex
+		for (Vertex v : _arrVertices) {
+
+			// clear meta-data
+			v.setColor("WHITE");
+			v.setPredecessorID("");
+
+			// find the start vertex
+			if (v.getUniqueID().toString().equals(strStartVertexUniqueID)) {
 				startVertex = v;
-				break;
 			}
+
 		}
-		
-		if(startVertex == null){
+
+		if (startVertex == null) {
 			throw new GraphException("Vertex not found!");
 		}
-		
-		dfsHelper(startVertex, visitor, new ArrayList<Vertex>());
+
+		// call the helper
+		dfsVisit(startVertex, visitor);
 	}
-	
-	public void dfsHelper(Vertex vertex, Visitor visitor, ArrayList<Vertex> visitedVertices) {
 
-		for(AdjacentVertexNode node : vertex.getAdjacencyList()) {					// Traversing Through All Adjacent Vertices
+	private void dfsVisit(Vertex vertex, Visitor visitor) {
 
-			if(!visitedVertices.contains(node.getAdjacentVertex())) {				// Checking Whether Vertex Is Visited Or Not
+		// visit the current vertex
+		vertex.setColor("GRAY");
+		visitor.visit(vertex);
 
-				visitedVertices.add(vertex);										// Adding Vertex To Visited Vertices
-				visitor.visit(node.getAdjacentVertex());							// Calling Visitor For The Adjacent Vertex
-				visitor.visit(node.getConnectingEdge());							// Calling Visitor For The Connecting Edge
+		// visit the adjacent vertices using DFS
+		for (AdjacentVertexNode node : vertex.getAdjacencyList()) {
 
-				dfsHelper(node.getAdjacentVertex(), visitor, visitedVertices);		// Calling dfsHelper For The Current Vertex
+			// find an unvisited node
+			if (node.getAdjacentVertex().getColor() == "WHITE") {
 
+				// visit the connecting edge
+				visitor.visit(node.getConnectingEdge());
+
+				// set the predecessor
+				node.getAdjacentVertex().setPredecessorID(vertex.getUniqueID().toString());
+
+				// go deeper
+				dfsVisit(node.getAdjacentVertex(), visitor);
 			}
 		}
 
+		// done with all the adjacent vertices
+		vertex.setColor("BLACK");
 	}
 
 	// performs breadth first search starting from passed vertex
