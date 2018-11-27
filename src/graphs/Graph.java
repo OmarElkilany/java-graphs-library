@@ -3,6 +3,7 @@ package graphs;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.Vector;
 import java.lang.StringBuffer;
 
@@ -370,7 +371,98 @@ public class Graph {
 	// if exists using DFS. [18 points]
 	public Vector<PathSegment> pathDFS(StringBuffer strStartVertexUniqueID, StringBuffer strEndVertexUniqueID)
 			throws GraphException {
-				return null;
+		// define arguments for pathDFSHelper
+		Vertex startVertex = null, endVertex = null;
+		Stack<Object> pathStack = new Stack<>();
+
+		// clear meta-data and find the start and end vertices
+		for (Vertex v : _arrVertices) {
+
+			// clear meta-data
+			v.setColor("WHITE");
+			v.setPredecessorID("NIL");
+
+			// find the start vertex
+			if (v.getUniqueID().toString().equals(strStartVertexUniqueID)) {
+				startVertex = v;
+			}
+
+			// find the end vertex
+			if (v.getUniqueID().toString().equals(strEndVertexUniqueID)) {
+				endVertex = v;
+			}
+
+		}
+
+		if (startVertex == null || endVertex == null) {
+			throw new GraphException("Start or end vertex not found!");
+		}
+
+		// perform DFS
+		pathDFSHelper(pathStack, startVertex, endVertex);
+
+		// create the output vector
+		Vector<PathSegment> result = new Vector<PathSegment>();
+
+		if (pathStack.isEmpty()) {
+			return result;
+		} else {
+			// insert the last vertex
+			result.insertElementAt(new PathSegment((Vertex) pathStack.pop(), null), 0);
+			
+			// insert all the other path segments
+			while(!pathStack.isEmpty()){
+				
+				// pop an edge and a vertex
+				Edge pathSegmentEdge = (Edge) pathStack.pop();
+				Vertex pathSegmentVertex = (Vertex) pathStack.pop();
+				
+				// add them to the path vector
+				result.insertElementAt(new PathSegment(pathSegmentVertex, pathSegmentEdge), 0);
+				
+			}
+			
+			// return the vector
+			return result;	
+		}
+	}
+	
+	private void pathDFSHelper(Stack<Object> pathStack, Vertex currentVertex, Vertex destinationVertex) {
+
+		// visit the current vertex
+		currentVertex.setColor("GRAY");
+		pathStack.push(currentVertex);
+		
+		// stop if destination is reached
+		if(currentVertex.getUniqueID().toString().equals(destinationVertex.getUniqueID().toString())) {
+			return;
+		}
+
+		// visit the adjacent vertices using DFS
+		for (AdjacentVertexNode node : currentVertex.getAdjacencyList()) {
+
+			// find an unvisited node
+			if (node.getAdjacentVertex().getColor() == "WHITE") {
+
+				// set the predecessor
+				node.getAdjacentVertex().setPredecessorID(currentVertex.getUniqueID().toString());
+
+				// add the edge to the path
+				pathStack.add(node.getConnectingEdge());
+				
+				// go deeper
+				pathDFSHelper(pathStack, node.getAdjacentVertex(), destinationVertex);
+				
+				// remove the edge since it led nowhere
+				pathStack.pop();
+			}
+		}
+
+		// done with all the adjacent vertices
+		currentVertex.setColor("BLACK");
+		
+		// remove the vertex since it led nowhere
+		pathStack.pop();
 	}
 
 	// finds the closest pair of vertices using divide and conquer

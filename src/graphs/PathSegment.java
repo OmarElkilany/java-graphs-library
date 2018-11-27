@@ -7,6 +7,15 @@ public class PathSegment {
 	protected Vertex _vertex; // the vertex in this path segment
 	protected Edge _edge; // the edge associated with this vertex
 
+	public PathSegment(Vertex vertex, Edge edge) {
+		this._vertex = vertex;
+		this._edge = edge;
+	}
+	
+	public PathSegment() {
+		
+	}
+	
 	public Vertex getVertex() {
 		return _vertex;
 	}
