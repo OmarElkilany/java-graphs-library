@@ -92,6 +92,7 @@ public class Graph {
 		for(Vertex v : _arrVertices){
 			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
 				vertexToDelete = v;
+				break;
 			}
 		}
 		
@@ -173,9 +174,11 @@ public class Graph {
 	public Vector<Edge> incidentEdges(String strVertexUniqueID) throws GraphException {
 		Vertex vertexInQuestion = null;
 		
+		// find the vertex
 		for(Vertex v : _arrVertices){
 			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
 				vertexInQuestion = v;
+				break;
 			}
 		}
 		
@@ -183,6 +186,7 @@ public class Graph {
 			throw new GraphException("Vertex not found!");
 		}
 		
+		// calculate the incident edges
 		Vector<Edge> incidentEdges = new Vector<>();
 		
 		for(AdjacentVertexNode node: vertexInQuestion.getAdjacencyList()){
@@ -207,9 +211,11 @@ public class Graph {
 	public Vertex[] endVertices(String strEdgeUniqueID) throws GraphException {
 		Edge edgeInQuestion = null;
 		
+		// find the edge
 		for(Edge edge: _arrEdges){
 			if(edge.getUniqueID().toString().equals(strEdgeUniqueID)){
 				edgeInQuestion = edge;
+				break;
 			}
 		}
 		
@@ -228,9 +234,11 @@ public class Graph {
 	public Vertex opposite(String strVertexUniqueID, String strEdgeUniqueID) throws GraphException {
 		Edge edgeInQuestion = null;
 		
+		// find the edge
 		for(Edge edge: _arrEdges){
 			if(edge.getUniqueID().toString().equals(strEdgeUniqueID)){
 				edgeInQuestion = edge;
+				break;
 			}
 		}
 		
@@ -238,10 +246,12 @@ public class Graph {
 			throw new GraphException("Edge not found!");
 		}
 		
+		// check if the edge-vertex combination provided is valid
 		if(!strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString()) && !strVertexUniqueID.equals(edgeInQuestion._verSecondVertex.getUniqueID().toString())){
 			throw new GraphException("Vertex not connected to Edge/doesn't exist");
 		}
 		
+		// return the appropriate vertex
 		if(strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString())){
 			return edgeInQuestion._verSecondVertex;
 		} else {
