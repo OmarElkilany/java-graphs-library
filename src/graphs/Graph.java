@@ -371,6 +371,7 @@ public class Graph {
 	// if exists using DFS. [18 points]
 	public Vector<PathSegment> pathDFS(StringBuffer strStartVertexUniqueID, StringBuffer strEndVertexUniqueID)
 			throws GraphException {
+		
 		// define arguments for pathDFSHelper
 		Vertex startVertex = null, endVertex = null;
 		Stack<Object> pathStack = new Stack<>();
@@ -448,7 +449,7 @@ public class Graph {
 				node.getAdjacentVertex().setPredecessorID(currentVertex.getUniqueID().toString());
 
 				// add the edge to the path
-				pathStack.add(node.getConnectingEdge());
+				pathStack.push(node.getConnectingEdge());
 				
 				// go deeper
 				pathDFSHelper(pathStack, node.getAdjacentVertex(), destinationVertex);
