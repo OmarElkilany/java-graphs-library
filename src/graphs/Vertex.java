@@ -1,5 +1,6 @@
 package graphs;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class Vertex {
@@ -39,6 +40,8 @@ public class Vertex {
 		return _lstAdjacencyList;
 	}
 
+	
+	// DFS Helper methods
 	public String getColor() {
 		return color;
 	}
@@ -54,5 +57,27 @@ public class Vertex {
 	public void setPredecessorID(String predecessorID) {
 		this.predecessorID = predecessorID;
 	}
+	
+	
+	// Closest pair helper methods
+	public double getDistance(Vertex vertex2){
+		return Math.sqrt(Math.pow(this._nX - vertex2._nX, 2) + Math.pow(this._nY - vertex2._nY, 2));
+	}
+	
+	public static Comparator<Vertex> sortbyX = new Comparator<Vertex>() {
+
+		@Override
+		public int compare(Vertex ver1, Vertex ver2) {
+			return ver1._nX - ver2._nX;
+		}
+	};
+	
+	public static Comparator<Vertex> sortbyY = new Comparator<Vertex>() {
+
+		@Override
+		public int compare(Vertex ver1, Vertex ver2) {
+			return ver1._nY - ver2._nY;
+		}
+	};
 	
 }

@@ -1,6 +1,7 @@
 package graphs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -468,7 +469,95 @@ public class Graph {
 
 	// finds the closest pair of vertices using divide and conquer
 	// algorithm. Use X and Y attributes in each vertex. [30 points]
+	@SuppressWarnings("unchecked")
 	public Vertex[] closestPair() throws GraphException {
-		return null;
+		// Sort points according to X
+		ArrayList<Vertex> pointsXSorted = (ArrayList<Vertex>) _arrVertices.clone();
+		Collections.sort(pointsXSorted, Vertex.sortbyX);
+		
+		// Sort points according to Y
+		ArrayList<Vertex> pointsYSorted = (ArrayList<Vertex>) _arrVertices.clone();
+		Collections.sort(pointsYSorted, Vertex.sortbyY);
+		
+		Vertex[] pair = closestPairHelper(pointsXSorted, pointsYSorted);
+		
+		return pair;
 	}
+
+	private Vertex[] closestPairHelper(ArrayList<Vertex> pointsXSorted, ArrayList<Vertex> pointsYSorted) {
+		Vertex[] result = new Vertex[2];
+		
+		// if the number of elements in the arraylist is less than 3, just find the pair using brute-force
+		if(pointsXSorted.size() <= 3){
+			double minDistance = Double.MAX_VALUE;
+			
+			for(Vertex ver1 : pointsXSorted){
+				for(Vertex ver2 : pointsXSorted){
+					if(ver1 != ver2 && ver1.getDistance(ver2) < minDistance){
+						minDistance = ver1.getDistance(ver2);
+						result[0] = ver1;
+						result[1] = ver2;
+					}
+				}
+			}
+			
+			return result;
+		}
+		
+		int midpoint = pointsXSorted.size() / 2;
+		
+		// New X-coordinates-sorted subarrays
+		ArrayList<Vertex> leftSubarrayX = new ArrayList<>(pointsXSorted.subList(0, midpoint));
+		ArrayList<Vertex> rightSubarrayX = new ArrayList<>(pointsXSorted.subList(midpoint, pointsXSorted.size()));
+		
+		// New Y-coordinates-sorted subarrays
+		ArrayList<Vertex> leftSubarrayY = new ArrayList<>(leftSubarrayX.size());
+		ArrayList<Vertex> rightSubarrayY = new ArrayList<>(rightSubarrayX.size());
+		// Fill them according to X-coordinates
+		for(int i = 0; i < pointsYSorted.size(); i++){
+			if(pointsYSorted.get(i).getX() < pointsXSorted.get(midpoint).getX()){
+				leftSubarrayY.add(pointsYSorted.get(i));
+			} else {
+				rightSubarrayY.add(pointsYSorted.get(i));
+			}
+		}
+		
+		// Divide 
+		Vertex[] leftResult = closestPairHelper(leftSubarrayX, leftSubarrayY);
+		Vertex[] rightResult = closestPairHelper(rightSubarrayX, rightSubarrayY);
+		
+		double minimumResult = Math.min(leftResult[0].getDistance(leftResult[1]), rightResult[0].getDistance(rightResult[1]));
+		
+		if(minimumResult == leftResult[0].getDistance(leftResult[1])){
+			result = leftResult;
+		} else {
+			result = rightResult;
+		}
+		
+		// Create array of points within 2*minimumDistance of vertical line
+		ArrayList<Vertex> pointsInStrip = new ArrayList<>();
+		
+		for(int i = 0; i < pointsYSorted.size(); i++){
+			if(pointsYSorted.get(i).getDistance(pointsXSorted.get(midpoint)) < minimumResult){
+				pointsInStrip.add(pointsYSorted.get(i));
+			}
+		}
+		
+		// Compare the distances between the points
+		for(int i = 0; i < pointsInStrip.size(); i++){
+			for(int j = 0; j < pointsInStrip.size(); j++){
+				if(i == j){
+					continue;
+				}
+				if(pointsInStrip.get(i).getDistance(pointsInStrip.get(j)) < minimumResult){
+					minimumResult = pointsInStrip.get(i).getDistance(pointsInStrip.get(j));
+					result[0] = pointsInStrip.get(i);
+					result[1] = pointsInStrip.get(j);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 }
