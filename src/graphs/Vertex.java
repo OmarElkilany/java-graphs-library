@@ -9,6 +9,8 @@ public class Vertex {
 	
 	protected LinkedList<AdjacentVertexNode> _lstAdjacencyList;
 	
+	private String color, predecessorID; // variables for DFS
+	
 	public Vertex(String vertexID, String vertexData, int X, int Y){
 		_strUniqueID = new StringBuffer(vertexID);
 		_strData = new StringBuffer(vertexData);
@@ -36,4 +38,21 @@ public class Vertex {
 	public LinkedList<AdjacentVertexNode> getAdjacencyList(){
 		return _lstAdjacencyList;
 	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public String getPredecessorID() {
+		return predecessorID;
+	}
+
+	public void setPredecessorID(String predecessorID) {
+		this.predecessorID = predecessorID;
+	}
+	
 }

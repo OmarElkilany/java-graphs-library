@@ -2,6 +2,8 @@ package graphs;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.Vector;
 import java.lang.StringBuffer;
 
@@ -86,31 +88,45 @@ public class Graph {
 
 	// removes vertex and its incident edges [1 point]
 	public void removeVertex(String strVertexUniqueID) throws GraphException {
-		Vertex vertextoDelete = null;
+		Vertex vertexToDelete = null;
 		
 		for(Vertex v : _arrVertices){
 			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
-				vertextoDelete = v;
+				vertexToDelete = v;
+				break;
 			}
 		}
 		
-		if(vertextoDelete == null){
+		if(vertexToDelete == null){
 			throw new GraphException("Vertex to delete not found");
 		}
 		
-		LinkedList<AdjacentVertexNode> connectedVertices = vertextoDelete.getAdjacencyList();
+		// retrieve the nodes connected to the vertex-to-delete
+		LinkedList<AdjacentVertexNode> connectedNodes = vertexToDelete.getAdjacencyList();
 		
-		for(AdjacentVertexNode node:connectedVertices){
-			LinkedList<AdjacentVertexNode> adjacentVertexList = _arrVertices.get(_arrVertices.indexOf(node.getAdjacentVertex())).getAdjacencyList();
-			for(int i = 0; i < adjacentVertexList.size(); i++){
-				if(adjacentVertexList.get(i).getAdjacentVertex().equals(vertextoDelete)){
-					adjacentVertexList.remove(i);
-					break;
+		// loop over the connected nodes
+		for(AdjacentVertexNode node:connectedNodes){
+			
+			// get the adjacency list of the connected node's vertex
+			LinkedList<AdjacentVertexNode> connectedNodeList = node.getAdjacentVertex().getAdjacencyList();
+			
+			// loop over the connected node's adjacency list
+			for(AdjacentVertexNode connectedNodeListEntry: connectedNodeList) {
+				
+				if(connectedNodeListEntry.getAdjacentVertex().equals(vertexToDelete)) {
+					// remove the node of the vertex-to-delete from the adjacency list of the connected node
+					connectedNodeList.remove(connectedNodeListEntry);
 				}
 			}
 		}
 		
-		_arrVertices.remove(vertextoDelete);
+		// remove the edges from the edges Array list
+		for (AdjacentVertexNode node : connectedNodes) {
+			_arrEdges.remove(node.getConnectingEdge());
+		}
+		
+		// remove the vertex-to-delete
+		_arrVertices.remove(vertexToDelete);
 	}
 
 	// removes an edge from the graph [1 point]
@@ -127,10 +143,11 @@ public class Graph {
 			throw new GraphException("Edge to delete not found!");
 		}
 		
+		// retrieve the adjacency list of the first vertex connected to the edge-to-delete
 		LinkedList<AdjacentVertexNode> list;
 		list = _arrVertices.get(_arrVertices.indexOf(edgeToDelete._verFirstVertex)).getAdjacencyList();
 		
-		// Delete edge from first vertex
+		// Delete the node from first vertex's adjacency list
 		for(AdjacentVertexNode node: list){
 			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID)){
 				list.remove(node);
@@ -138,15 +155,19 @@ public class Graph {
 			}
 		}
 		
+		// retrieve the adjacency list of the second vertex connected to the edge-to-delete
 		list = _arrVertices.get(_arrVertices.indexOf(edgeToDelete._verSecondVertex)).getAdjacencyList();
 		
-		// Delete edge from second vertex
+		// Delete the node from second vertex's adjacency list
 		for(AdjacentVertexNode node: list){
 			if(node.getConnectingEdge().getUniqueID().toString().equals(strEdgeUniqueID)){
 				list.remove(node);
 				break;
 			}
 		}
+		
+		// remove the edge-to-delete
+		_arrEdges.remove(edgeToDelete);
 	}
 
 	// returns a vector of edges incident to vertex whose
@@ -154,9 +175,11 @@ public class Graph {
 	public Vector<Edge> incidentEdges(String strVertexUniqueID) throws GraphException {
 		Vertex vertexInQuestion = null;
 		
+		// find the vertex
 		for(Vertex v : _arrVertices){
 			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
 				vertexInQuestion = v;
+				break;
 			}
 		}
 		
@@ -164,6 +187,7 @@ public class Graph {
 			throw new GraphException("Vertex not found!");
 		}
 		
+		// calculate the incident edges
 		Vector<Edge> incidentEdges = new Vector<>();
 		
 		for(AdjacentVertexNode node: vertexInQuestion.getAdjacencyList()){
@@ -188,9 +212,11 @@ public class Graph {
 	public Vertex[] endVertices(String strEdgeUniqueID) throws GraphException {
 		Edge edgeInQuestion = null;
 		
+		// find the edge
 		for(Edge edge: _arrEdges){
 			if(edge.getUniqueID().toString().equals(strEdgeUniqueID)){
 				edgeInQuestion = edge;
+				break;
 			}
 		}
 		
@@ -209,9 +235,11 @@ public class Graph {
 	public Vertex opposite(String strVertexUniqueID, String strEdgeUniqueID) throws GraphException {
 		Edge edgeInQuestion = null;
 		
+		// find the edge
 		for(Edge edge: _arrEdges){
 			if(edge.getUniqueID().toString().equals(strEdgeUniqueID)){
 				edgeInQuestion = edge;
+				break;
 			}
 		}
 		
@@ -219,10 +247,12 @@ public class Graph {
 			throw new GraphException("Edge not found!");
 		}
 		
+		// check if the edge-vertex combination provided is valid
 		if(!strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString()) && !strVertexUniqueID.equals(edgeInQuestion._verSecondVertex.getUniqueID().toString())){
 			throw new GraphException("Vertex not connected to Edge/doesn't exist");
 		}
 		
+		// return the appropriate vertex
 		if(strVertexUniqueID.equals(edgeInQuestion._verFirstVertex.getUniqueID().toString())){
 			return edgeInQuestion._verSecondVertex;
 		} else {
@@ -234,35 +264,54 @@ public class Graph {
 	// visitor is called on each vertex and edge visited. [12 points]
 	public void dfs(StringBuffer strStartVertexUniqueID, Visitor visitor) throws GraphException {
 		Vertex startVertex = null;
-		
-		for(Vertex v : _arrVertices){
-			if(v.getUniqueID().toString().equals(strStartVertexUniqueID)){
+
+		// clear meta-data and find the start vertex
+		for (Vertex v : _arrVertices) {
+
+			// clear meta-data
+			v.setColor("WHITE");
+			v.setPredecessorID("NIL");
+
+			// find the start vertex
+			if (v.getUniqueID().toString().equals(strStartVertexUniqueID)) {
 				startVertex = v;
 			}
+
 		}
-		
-		if(startVertex == null){
+
+		if (startVertex == null) {
 			throw new GraphException("Vertex not found!");
 		}
-		
-		dfsHelper(startVertex, visitor, new ArrayList<Vertex>());
+
+		// call the helper
+		dfsVisit(startVertex, visitor);
 	}
-	
-	public void dfsHelper(Vertex vertex, Visitor visitor, ArrayList<Vertex> visitedVertices) {
 
-		for(AdjacentVertexNode node : vertex.getAdjacencyList()) {					// Traversing Through All Adjacent Vertices
+	private void dfsVisit(Vertex vertex, Visitor visitor) {
 
-			if(!visitedVertices.contains(node.getAdjacentVertex())) {				// Checking Whether Vertex Is Visited Or Not
+		// visit the current vertex
+		vertex.setColor("GRAY");
+		visitor.visit(vertex);
 
-				visitedVertices.add(vertex);										// Adding Vertex To Visited Vertices
-				visitor.visit(node.getAdjacentVertex());							// Calling Visitor For The Adjacent Vertex
-				visitor.visit(node.getConnectingEdge());							// Calling Visitor For The Connecting Edge
+		// visit the adjacent vertices using DFS
+		for (AdjacentVertexNode node : vertex.getAdjacencyList()) {
 
-				dfsHelper(node.getAdjacentVertex(), visitor, visitedVertices);		// Calling dfsHelper For The Current Vertex
+			// find an unvisited node
+			if (node.getAdjacentVertex().getColor() == "WHITE") {
 
+				// visit the connecting edge
+				visitor.visit(node.getConnectingEdge());
+
+				// set the predecessor
+				node.getAdjacentVertex().setPredecessorID(vertex.getUniqueID().toString());
+
+				// go deeper
+				dfsVisit(node.getAdjacentVertex(), visitor);
 			}
 		}
 
+		// done with all the adjacent vertices
+		vertex.setColor("BLACK");
 	}
 
 	// performs breadth first search starting from passed vertex
@@ -270,55 +319,151 @@ public class Graph {
 	public void bfs(StringBuffer strStartVertexUniqueID, Visitor visitor) throws GraphException {
 		Vertex startVertex = null;
 		
+		// initialize BFS
 		for(Vertex v : _arrVertices){
+			// determine and visit the start vertex
 			if(v.getUniqueID().toString().equals(strStartVertexUniqueID)){
 				startVertex = v;
-			}
+				startVertex.setColor("GRAY");
+				visitor.visit(startVertex);
+			} else {
+				v.setColor("WHITE");
+				v.setPredecessorID("NIL");
+			}	
 		}
 		
 		if(startVertex == null){
 			throw new GraphException("Vertex not found!");
 		}
 		
-		ArrayList<Vertex> visitedVertices = new ArrayList<Vertex>();				// Array List For Visited Vertices
-		ArrayList<Vertex> verticesToBeVisited = new ArrayList<Vertex>();			// Array List For Vertices To Be Visited
-		ArrayList<Edge> edgesToBeVisited = new ArrayList<Edge>();					// Array List For Edges To Be Visited Through Visited Vertices
+		// perform the BFS
+		Queue<Vertex> verticesQueue = new LinkedList<Vertex>();
 		
-		verticesToBeVisited.add(startVertex);										// Adding Start Vertex To Visited Vertices (Redundant & Add Only To Satisfy The Condition)
-		edgesToBeVisited.add(new Edge(null, null, 0, null, null));					// Adding Redundant Edge To Avoid The Error In The First Iteration
+		verticesQueue.add(startVertex);
 		
-		while(verticesToBeVisited.size() != 0) {									// Checking If There Is More Vertices Need To Be Visited
-
-			Vertex vertex = verticesToBeVisited.remove(0);							// Getting First Element In The Vertices To Be Visited
-			Edge edge = edgesToBeVisited.remove(0);									// Getting First Edge That Connects The Parent Vertex With The Child Vertex
+		while(!verticesQueue.isEmpty()) {
+			Vertex currentVertex = verticesQueue.remove();
 			
-			visitedVertices.add(vertex);											// Adding Vertex To The Visited Vertices
-
-			if(vertex != startVertex) {
-				visitor.visit(vertex);
-				visitor.visit(edge);
-			}
-			
-			for(AdjacentVertexNode node : vertex.getAdjacencyList()) {				// Traversing Through All Adjacent Vertices
+			for(AdjacentVertexNode node: currentVertex.getAdjacencyList()) {
 				
-				if(!visitedVertices.contains(node.getAdjacentVertex())) {			// Checking If Vertex Has Been Visited Or Not
-
-					verticesToBeVisited.add(node.getAdjacentVertex());				// Adding Vertex To Be Visited To The End Of The Array List
-					edgesToBeVisited.add(node.getConnectingEdge());					// Adding Edge That Connects Visited Vertex With Vertex To Be Visited
-
+				if(node.getAdjacentVertex().getColor() == "WHITE") {
+					
+					// visit the edge and then the vertex
+					node.getAdjacentVertex().setColor("GRAY");
+					visitor.visit(node.getConnectingEdge());
+					visitor.visit(node.getAdjacentVertex());
+					
+					// set the predecessor ID
+					node.getAdjacentVertex().setPredecessorID(currentVertex.getUniqueID().toString());
+					
+					// enqueue the visited vertex
+					verticesQueue.add(node.getAdjacentVertex());
 				}
-				
 			}
-
+			
+			// done with vertex and all of its adjacent vertices
+			currentVertex.setColor("BLACK");	
 		}
-
+		
 	}
 
 	// returns a path between start vertex and end vertex
 	// if exists using DFS. [18 points]
 	public Vector<PathSegment> pathDFS(StringBuffer strStartVertexUniqueID, StringBuffer strEndVertexUniqueID)
 			throws GraphException {
-				return null;
+		
+		// define arguments for pathDFSHelper
+		Vertex startVertex = null, endVertex = null;
+		Stack<Object> pathStack = new Stack<>();
+
+		// clear meta-data and find the start and end vertices
+		for (Vertex v : _arrVertices) {
+
+			// clear meta-data
+			v.setColor("WHITE");
+			v.setPredecessorID("NIL");
+
+			// find the start vertex
+			if (v.getUniqueID().toString().equals(strStartVertexUniqueID)) {
+				startVertex = v;
+			}
+
+			// find the end vertex
+			if (v.getUniqueID().toString().equals(strEndVertexUniqueID)) {
+				endVertex = v;
+			}
+
+		}
+
+		if (startVertex == null || endVertex == null) {
+			throw new GraphException("Start or end vertex not found!");
+		}
+
+		// perform DFS
+		pathDFSHelper(pathStack, startVertex, endVertex);
+
+		// create the output vector
+		Vector<PathSegment> result = new Vector<PathSegment>();
+
+		if (pathStack.isEmpty()) {
+			return result;
+		} else {
+			// insert the last vertex
+			result.insertElementAt(new PathSegment((Vertex) pathStack.pop(), null), 0);
+			
+			// insert all the other path segments
+			while(!pathStack.isEmpty()){
+				
+				// pop an edge and a vertex
+				Edge pathSegmentEdge = (Edge) pathStack.pop();
+				Vertex pathSegmentVertex = (Vertex) pathStack.pop();
+				
+				// add them to the path vector
+				result.insertElementAt(new PathSegment(pathSegmentVertex, pathSegmentEdge), 0);
+				
+			}
+			
+			// return the vector
+			return result;	
+		}
+	}
+	
+	private void pathDFSHelper(Stack<Object> pathStack, Vertex currentVertex, Vertex destinationVertex) {
+
+		// visit the current vertex
+		currentVertex.setColor("GRAY");
+		pathStack.push(currentVertex);
+		
+		// stop if destination is reached
+		if(currentVertex.getUniqueID().toString().equals(destinationVertex.getUniqueID().toString())) {
+			return;
+		}
+
+		// visit the adjacent vertices using DFS
+		for (AdjacentVertexNode node : currentVertex.getAdjacencyList()) {
+
+			// find an unvisited node
+			if (node.getAdjacentVertex().getColor() == "WHITE") {
+
+				// set the predecessor
+				node.getAdjacentVertex().setPredecessorID(currentVertex.getUniqueID().toString());
+
+				// add the edge to the path
+				pathStack.push(node.getConnectingEdge());
+				
+				// go deeper
+				pathDFSHelper(pathStack, node.getAdjacentVertex(), destinationVertex);
+				
+				// remove the edge since it led nowhere
+				pathStack.pop();
+			}
+		}
+
+		// done with all the adjacent vertices
+		currentVertex.setColor("BLACK");
+		
+		// remove the vertex since it led nowhere
+		pathStack.pop();
 	}
 
 	// finds the closest pair of vertices using divide and conquer
