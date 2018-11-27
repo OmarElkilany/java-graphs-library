@@ -264,9 +264,11 @@ public class Graph {
 	public void dfs(StringBuffer strStartVertexUniqueID, Visitor visitor) throws GraphException {
 		Vertex startVertex = null;
 		
+		// find the start vertex
 		for(Vertex v : _arrVertices){
 			if(v.getUniqueID().toString().equals(strStartVertexUniqueID)){
 				startVertex = v;
+				break;
 			}
 		}
 		
