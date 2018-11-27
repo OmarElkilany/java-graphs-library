@@ -87,31 +87,42 @@ public class Graph {
 
 	// removes vertex and its incident edges [1 point]
 	public void removeVertex(String strVertexUniqueID) throws GraphException {
-		Vertex vertextoDelete = null;
+		Vertex vertexToDelete = null;
 		
 		for(Vertex v : _arrVertices){
 			if(v.getUniqueID().toString().equals(strVertexUniqueID)){
-				vertextoDelete = v;
+				vertexToDelete = v;
 			}
 		}
 		
-		if(vertextoDelete == null){
+		if(vertexToDelete == null){
 			throw new GraphException("Vertex to delete not found");
 		}
 		
-		LinkedList<AdjacentVertexNode> connectedVertices = vertextoDelete.getAdjacencyList();
+		// retrieve the nodes connected to the vertex to delete
+		LinkedList<AdjacentVertexNode> connectedNodes = vertexToDelete.getAdjacencyList();
 		
-		for(AdjacentVertexNode node:connectedVertices){
-			LinkedList<AdjacentVertexNode> adjacentVertexList = _arrVertices.get(_arrVertices.indexOf(node.getAdjacentVertex())).getAdjacencyList();
-			for(int i = 0; i < adjacentVertexList.size(); i++){
-				if(adjacentVertexList.get(i).getAdjacentVertex().equals(vertextoDelete)){
-					adjacentVertexList.remove(i);
-					break;
+		// loop over the connected nodes
+		for(AdjacentVertexNode node:connectedNodes){
+			
+			// get the adjacency list of the connected node's vertex
+			LinkedList<AdjacentVertexNode> connectedNodeList = node.getAdjacentVertex().getAdjacencyList();
+			
+			// loop over the connected node's adjacency list
+			for(AdjacentVertexNode connectedNodeListEntry: connectedNodeList) {
+				
+				if(connectedNodeListEntry.getAdjacentVertex().equals(vertexToDelete)) {
+					// remove the edge from the edges Array list
+					_arrEdges.remove(connectedNodeListEntry.getConnectingEdge());
+					
+					// remove the node of the vertex-to-delete from the adjacency list of the connected node
+					connectedNodeList.remove(connectedNodeListEntry);
 				}
 			}
 		}
 		
-		_arrVertices.remove(vertextoDelete);
+		// remove the vertex-to-delete
+		_arrVertices.remove(vertexToDelete);
 	}
 
 	// removes an edge from the graph [1 point]
@@ -148,6 +159,9 @@ public class Graph {
 				break;
 			}
 		}
+		
+		// remove the edge-to-delete
+		_arrEdges.remove(edgeToDelete);
 	}
 
 	// returns a vector of edges incident to vertex whose
