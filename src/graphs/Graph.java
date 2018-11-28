@@ -412,7 +412,7 @@ public class Graph {
 			return result;
 		} else {
 			// insert the last vertex
-			result.insertElementAt(new PathSegment((Vertex) finalPathStack.pop(), null), 0);
+			result.add(new PathSegment((Vertex) finalPathStack.pop(), null));
 			
 			// insert all the other path segments
 			while(!finalPathStack.isEmpty()){
@@ -422,9 +422,11 @@ public class Graph {
 				Vertex pathSegmentVertex = (Vertex) finalPathStack.pop();
 				
 				// add them to the path vector
-				result.insertElementAt(new PathSegment(pathSegmentVertex, pathSegmentEdge), 0);
+				result.add(new PathSegment(pathSegmentVertex, pathSegmentEdge));
 				
 			}
+			
+			Collections.reverse(result);
 			
 			// return the vector
 			return result;	
