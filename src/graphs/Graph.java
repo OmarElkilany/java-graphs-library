@@ -364,6 +364,9 @@ public class Graph {
 		
 	}
 
+	// variable to store the final path
+	static Stack <Object> finalPathStack;
+	
 	// returns a path between start vertex and end vertex
 	// if exists using DFS. [18 points]
 	public Vector<PathSegment> pathDFS(StringBuffer strStartVertexUniqueID, StringBuffer strEndVertexUniqueID)
@@ -372,6 +375,9 @@ public class Graph {
 		// define arguments for pathDFSHelper
 		Vertex startVertex = null, endVertex = null;
 		Stack<Object> pathStack = new Stack<>();
+		
+		// reset the finalPathStack
+		finalPathStack = null;
 
 		// clear meta-data and find the start and end vertices
 		for (Vertex v : _arrVertices) {
@@ -402,18 +408,18 @@ public class Graph {
 		// create the output vector
 		Vector<PathSegment> result = new Vector<PathSegment>();
 
-		if (pathStack.isEmpty()) {
+		if (finalPathStack == null) {
 			return result;
 		} else {
 			// insert the last vertex
-			result.insertElementAt(new PathSegment((Vertex) pathStack.pop(), null), 0);
+			result.insertElementAt(new PathSegment((Vertex) finalPathStack.pop(), null), 0);
 			
 			// insert all the other path segments
-			while(!pathStack.isEmpty()){
+			while(!finalPathStack.isEmpty()){
 				
 				// pop an edge and a vertex
-				Edge pathSegmentEdge = (Edge) pathStack.pop();
-				Vertex pathSegmentVertex = (Vertex) pathStack.pop();
+				Edge pathSegmentEdge = (Edge) finalPathStack.pop();
+				Vertex pathSegmentVertex = (Vertex) finalPathStack.pop();
 				
 				// add them to the path vector
 				result.insertElementAt(new PathSegment(pathSegmentVertex, pathSegmentEdge), 0);
@@ -425,6 +431,7 @@ public class Graph {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void pathDFSHelper(Stack<Object> pathStack, Vertex currentVertex, Vertex destinationVertex) {
 
 		// visit the current vertex
@@ -432,7 +439,10 @@ public class Graph {
 		pathStack.push(currentVertex);
 		
 		// stop if destination is reached
-		if(currentVertex.getUniqueID().toString().equals(destinationVertex.getUniqueID().toString())) {
+		if(currentVertex.getUniqueID().toString().equals(destinationVertex.getUniqueID().toString())) {			
+			// save the result
+			finalPathStack = (Stack<Object>) pathStack.clone();
+			
 			return;
 		}
 
