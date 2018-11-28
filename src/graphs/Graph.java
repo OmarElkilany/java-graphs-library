@@ -68,13 +68,6 @@ public class Graph {
 		
 		if(v1 == null | v2 == null){
 			throw new GraphException("One or more of the vertices to connect not found!");
-		} else {
-			// Check if edge already exists
-			for(AdjacentVertexNode node: v1.getAdjacencyList()){
-				if(node.getAdjacentVertex().equals(v2)){
-					throw new GraphException("The Vertices are already connected!");
-				}
-			}
 		}
 		
 		// Create edge and add it to IDs array
