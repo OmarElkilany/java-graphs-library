@@ -18,6 +18,7 @@ public class Vertex {
 		
 		_nX = X;
 		_nY = Y;
+		_lstAdjacencyList = new LinkedList<>();
 	}
 	
 	public StringBuffer getUniqueID() {
@@ -79,5 +80,8 @@ public class Vertex {
 			return ver1._nY - ver2._nY;
 		}
 	};
+	public String toString() {
+		return getUniqueID().toString();
+	}
 	
 }

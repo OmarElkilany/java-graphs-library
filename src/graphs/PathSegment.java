@@ -11,16 +11,21 @@ public class PathSegment {
 		this._vertex = vertex;
 		this._edge = edge;
 	}
-	
+
 	public PathSegment() {
-		
+
 	}
-	
+
 	public Vertex getVertex() {
 		return _vertex;
 	}
 
 	public Edge getEdge() {
 		return _edge;
+	}
+
+	public String toString() {
+		return getVertex().getUniqueID().toString() + " "
+				+ (getEdge() != null ? "--(" + getEdge().getUniqueID().toString() + ")--> " : "");
 	}
 }

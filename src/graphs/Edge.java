@@ -33,4 +33,7 @@ public class Edge {
 	public int getCost() {
 		return _nEdgeCost;
 	}
+	public String toString() {
+		return _verFirstVertex.getUniqueID()+" --("+getUniqueID()+")-- "+_verSecondVertex.getUniqueID();
+	}
 }
