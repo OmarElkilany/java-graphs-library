@@ -324,8 +324,7 @@ public class Graph {
 			if (v.getUniqueID().toString().equals(strStartVertexUniqueID)) {
 				startVertex = v;
 				startVertex.setColor("GRAY");
-				// TODO: commented this line to show path on each step of visiting
-				// visitor.visit(startVertex);
+				visitor.visit(startVertex);
 			} else {
 				v.setColor("WHITE");
 				v.setPredecessorID("NIL");
@@ -350,9 +349,6 @@ public class Graph {
 
 					// visit the edge and then the vertex
 					node.getAdjacentVertex().setColor("GRAY");
-					// TODO: added this line to show path on each visiting step
-					// check testcase 2 to understand why
-					visitor.visit(currentVertex);
 					visitor.visit(node.getConnectingEdge());
 					visitor.visit(node.getAdjacentVertex());
 
@@ -578,6 +574,29 @@ public class Graph {
 		}
 
 		return result;
+	}
+	
+	// finds a minimum spanning tree using kruskal greedy algorithm
+	// and returns the path to achieve that. Use Edge._nEdgeCost
+	// attribute in finding the min span tree [30 pts]
+	public Vector<PathSegment> minSpanningTree() throws GraphException {
+		return null;
+	}
+	
+	// finds shortest paths using bellman ford dynamic programming
+	// algorithm and returns all such paths starting from given
+	// vertex. Use Edge._nEdgeCost attribute in finding the
+	// shortest path [35 pts]
+	public Vector<Vector<PathSegment>> findShortestPathBF(String strStartVertexUniqueID) throws GraphException {
+		return null;
+	}
+	
+	// finds all shortest paths using Floyd–Warshall dynamic
+	// programming algorithm and returns all such paths. Use
+	// Edge._nEdgeCost attribute in finding the shortest path
+	// [35 pts]
+	public Vector<Vector<PathSegment>> findAllShortestPathsFW() throws GraphException {
+		return null;
 	}
 
 }
