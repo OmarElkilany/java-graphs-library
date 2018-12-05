@@ -1,6 +1,7 @@
 package graphs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -41,7 +42,7 @@ public class Graph {
 			}
 		}
 
-		Vertex newVertex = new Vertex(strUniqueID, strData, x, y);
+		Vertex newVertex = new Vertex(strUniqueID, strData, x, y, _arrVertices.size());
 		_arrVertices.add(newVertex);
 	}
 
@@ -575,28 +576,115 @@ public class Graph {
 
 		return result;
 	}
-	
+
 	// finds a minimum spanning tree using kruskal greedy algorithm
 	// and returns the path to achieve that. Use Edge._nEdgeCost
 	// attribute in finding the min span tree [30 pts]
 	public Vector<PathSegment> minSpanningTree() throws GraphException {
-		return null;
+		Vector<PathSegment> mst = new Vector<>();
+		DisjointSet dsu = new DisjointSet(_arrVertices.size());
+		ArrayList<Edge> edges = new ArrayList<>();
+		for (Edge e : _arrEdges)
+			edges.add(e);
+		Collections.sort(edges, (a, b) -> a.getCost() - b.getCost());
+		for (Edge e : edges) {
+			int u = e._verFirstVertex.getIdx(), v = e._verSecondVertex.getIdx();
+			if (dsu.union(u, v)) {
+				mst.add(new PathSegment(e._verFirstVertex, e));
+				mst.add(new PathSegment(e._verSecondVertex, e));
+			}
+		}
+		return mst;
 	}
-	
+
 	// finds shortest paths using bellman ford dynamic programming
 	// algorithm and returns all such paths starting from given
 	// vertex. Use Edge._nEdgeCost attribute in finding the
 	// shortest path [35 pts]
 	public Vector<Vector<PathSegment>> findShortestPathBF(String strStartVertexUniqueID) throws GraphException {
-		return null;
+		int V = _arrVertices.size();
+		int INF = (int) 1e9;
+		int[] dist = new int[V];
+		Arrays.fill(dist, INF);
+		int s = -1;
+		for (int i = 0; i < V; i++)
+			if (_arrVertices.get(i)._strUniqueID.toString().equals(strStartVertexUniqueID)) {
+				s = i;
+				break;
+			}
+		dist[s] = 0;
+		// relax all E edges V-1 times
+		Edge[] parent = new Edge[V];
+		Vector<Vector<PathSegment>> segments = new Vector<>();
+		for (int i = 0; i < V - 1; i++)
+			for (int u = 0; u < V; u++)
+				for (AdjacentVertexNode adjN : _arrVertices.get(u)._lstAdjacencyList) {
+					int v = adjN.AdjacentVertex.getIdx();
+					int newCost = dist[u] + adjN.ConnectingEdge.getCost();
+					if (newCost < dist[v]) {
+						dist[v] = newCost;
+						parent[v] = adjN.ConnectingEdge;
+					}
+				}
+		for (int i = 0; i < V; i++)
+			segments.add(new Vector<>());
+		segments.get(s).add(new PathSegment(_arrVertices.get(s), null));
+		for (int i = 0; i < V; i++) {
+			buildPath(i, parent, segments);
+		}
+		return segments;
 	}
-	
-	// finds all shortest paths using Floyd–Warshall dynamic
+
+	public void buildPath(int u, Edge[] parent, Vector<Vector<PathSegment>> segments) {
+		if (segments.get(u).size() != 0)
+			return;
+		Edge e = parent[u];
+		Vector<PathSegment> curr = segments.get(u);
+		int v = e._verFirstVertex.getIdx();
+		if (e._verFirstVertex == _arrVertices.get(u)) {
+			v = e._verSecondVertex.getIdx();
+		}
+		buildPath(v, parent, segments);
+		for (PathSegment ps : segments.get(v)) {
+			curr.add(ps);
+		}
+		curr.remove(curr.size() - 1);
+		curr.add(new PathSegment(_arrVertices.get(v), e));
+		curr.add(new PathSegment(_arrVertices.get(u), null));
+	}
+
+	// finds all shortest paths using Floydï¿½Warshall dynamic
 	// programming algorithm and returns all such paths. Use
 	// Edge._nEdgeCost attribute in finding the shortest path
 	// [35 pts]
 	public Vector<Vector<PathSegment>> findAllShortestPathsFW() throws GraphException {
-		return null;
+		int V = _arrVertices.size();
+		int[][] dist = new int[V][V];
+		int INF = (int) 1e9;
+		for (int[] a : dist)
+			Arrays.fill(a, INF);
+		for (Edge e : _arrEdges) {
+			int u = e._verFirstVertex.getIdx(), v = e._verSecondVertex.getIdx();
+			dist[u][v] = Math.min(dist[u][v], e.getCost());
+		}
+		for (int i = 0; i < V; i++)
+			dist[i][i] = 0;
+		for (int k = 0; k < V; k++)
+			for (int i = 0; i < V; i++)
+				for (int j = 0; j < V; j++)
+					dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+		Vector<Vector<PathSegment>> segments = new Vector<>();
+		for (int i = 0; i < V; i++) {
+			Vector<PathSegment> disCurr = new Vector<>();
+			segments.add(disCurr);
+			for (int j = 0; j < V; j++) {
+				Edge e = new Edge("edgeConnecting:" + i + "," + j, "", dist[i][j], _arrVertices.get(i),
+						_arrVertices.get(j));
+				disCurr.add(new PathSegment(_arrVertices.get(j), e));
+			}
+
+		}
+		return segments;
 	}
 
 }
