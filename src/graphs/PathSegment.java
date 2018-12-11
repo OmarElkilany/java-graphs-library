@@ -25,7 +25,9 @@ public class PathSegment {
 	}
 
 	public String toString() {
+//		Vertex v = getEdge()!=null?(getEdge()._verFirstVertex==getVertex()?getEdge()._verSecondVertex:getEdge()._verFirstVertex):null;
 		return getVertex().getUniqueID().toString() + " "
-				+ (getEdge() != null ? "--(" + getEdge().getUniqueID().toString() + ")--> " : "");
+				+ (getEdge() != null ? "--(" + getEdge().getUniqueID().toString() + ")--> " //+v.getUniqueId().toString();
+						: "");
 	}
 }

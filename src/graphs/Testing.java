@@ -24,6 +24,19 @@ public class Testing {
 		System.out.println();
 		System.out.println("testing closest pair");
 		runTestCase4();
+		System.out.println();
+		System.out.println();
+		System.out.println("testing MST");
+		runTestCase5();
+		System.out.println();
+		System.out.println();
+		System.out.println("testing BF");
+		runTestCase6();
+		System.out.println();
+		System.out.println();
+		System.out.println("testing FW");
+		runTestCase7();
+		
 	}
 
 	// tests the graph insertions, deletions, and so
@@ -145,6 +158,70 @@ public class Testing {
 		System.out.println(closePair[0].getUniqueID().toString());
 		System.out.println(closePair[1].getUniqueID().toString());
 	}
+	static void runTestCase5() throws GraphException {
+		Graph g = new Graph();
+		g.insertVertex("1", "1", 0, 0);
+		g.insertVertex("2", "2", 0, 0);
+		g.insertVertex("3", "3", 0, 0);
+		g.insertVertex("4", "4", 0, 0);
+		g.insertVertex("5", "5", 0, 0);
+		g.insertEdge("1", "4", "88", "88", 5);
+		g.insertEdge("1", "2", "2", "2", 2);
+		g.insertEdge("2", "3", "14", "14", 14);
+		g.insertEdge("2", "4", "99", "99", 5);
+		g.insertEdge("2", "5", "4", "4", 4);
+		g.insertEdge("4", "5", "58", "58", 58);
+		g.insertEdge("3", "5", "34", "34", 34);
+		Vector<PathSegment> seg= g.minSpanningTree();
+
+		System.out.println(seg);
+	}
+	static void runTestCase6() throws GraphException {
+		Graph g = new Graph();
+		g.insertVertex("1", "1", 0, 0);
+		g.insertVertex("2", "2", 0, 0);
+		g.insertVertex("3", "3", 0, 0);
+		g.insertVertex("4", "4", 0, 0);
+		g.insertVertex("5", "5", 0, 0);
+		g.insertEdge("1", "4", "88", "88", 5);
+		g.insertEdge("1", "2", "2", "2", 2);
+		g.insertEdge("2", "3", "14", "14", 14);
+		g.insertEdge("2", "4", "99", "99", 5);
+		g.insertEdge("2", "5", "4", "4", 4);
+		g.insertEdge("4", "5", "58", "58", 58);
+		g.insertEdge("3", "5", "34", "34", 34);
+		Vector<Vector<PathSegment>> seg= g.findShortestPathBF("5");
+		for(Vector<PathSegment>v: seg) {
+			for(PathSegment p: v) {
+				System.out.print(p);
+			}
+			System.out.println();
+		}
+	}
+	static void runTestCase7() throws GraphException {
+		Graph g = new Graph();
+		g.insertVertex("1", "1", 0, 0);
+		g.insertVertex("2", "2", 0, 0);
+		g.insertVertex("3", "3", 0, 0);
+		g.insertVertex("4", "4", 0, 0);
+		g.insertVertex("5", "5", 0, 0);
+		g.insertEdge("1", "4", "88", "88", 5);
+		g.insertEdge("1", "2", "2", "2", 2);
+		g.insertEdge("2", "3", "14", "14", 14);
+		g.insertEdge("2", "4", "99", "99", 5);
+		g.insertEdge("2", "5", "4", "4", 4);
+		g.insertEdge("4", "5", "58", "58", 58);
+		g.insertEdge("3", "5", "34", "34", 34);
+		Vector<Vector<PathSegment>> seg= g.findAllShortestPathsFW();
+		for(Vector<PathSegment>v: seg) {
+			for(PathSegment p: v) {
+				System.out.print(p);
+			}
+			System.out.println();
+		}
+	}
+
+
 
 	static class GradingVisitor implements Visitor {
 		protected String _strResult = new String();

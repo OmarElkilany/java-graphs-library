@@ -630,21 +630,23 @@ public class Graph {
 			segments.add(new Vector<>());
 		segments.get(s).add(new PathSegment(_arrVertices.get(s), null));
 		for (int i = 0; i < V; i++) {
-			buildPath(i, parent, segments);
+			buildBFPath(i, parent, segments);
 		}
 		return segments;
 	}
 
-	public void buildPath(int u, Edge[] parent, Vector<Vector<PathSegment>> segments) {
+	public void buildBFPath(int u, Edge[] parent, Vector<Vector<PathSegment>> segments) {
 		if (segments.get(u).size() != 0)
 			return;
 		Edge e = parent[u];
+		if(e==null)
+			return;
 		Vector<PathSegment> curr = segments.get(u);
 		int v = e._verFirstVertex.getIdx();
 		if (e._verFirstVertex == _arrVertices.get(u)) {
 			v = e._verSecondVertex.getIdx();
 		}
-		buildPath(v, parent, segments);
+		buildBFPath(v, parent, segments);
 		for (PathSegment ps : segments.get(v)) {
 			curr.add(ps);
 		}
@@ -663,28 +665,65 @@ public class Graph {
 		int INF = (int) 1e9;
 		for (int[] a : dist)
 			Arrays.fill(a, INF);
+		Edge[][] parent = new Edge[V][V];
 		for (Edge e : _arrEdges) {
 			int u = e._verFirstVertex.getIdx(), v = e._verSecondVertex.getIdx();
-			dist[u][v] = Math.min(dist[u][v], e.getCost());
+			int cost = e.getCost();
+			if (cost < dist[u][v]) {
+				parent[u][v] = e;
+				dist[u][v] = cost;
+				dist[v][u] = cost;
+				parent[v][u] = e;
+			}
 		}
 		for (int i = 0; i < V; i++)
 			dist[i][i] = 0;
 		for (int k = 0; k < V; k++)
 			for (int i = 0; i < V; i++)
-				for (int j = 0; j < V; j++)
-					dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+				for (int j = 0; j < V; j++) {
+					if (dist[i][k] + dist[k][j] < dist[i][j]) {
+						dist[i][j] = dist[i][k] + dist[k][j];
+						parent[i][j] = parent[k][j];
+					}
+				}
 		Vector<Vector<PathSegment>> segments = new Vector<>();
+		Vector<PathSegment>[][] paths = new Vector[V][V];
 		for (int i = 0; i < V; i++) {
-			Vector<PathSegment> disCurr = new Vector<>();
-			segments.add(disCurr);
 			for (int j = 0; j < V; j++) {
-				Edge e = new Edge("edgeConnecting:" + i + "," + j, "", dist[i][j], _arrVertices.get(i),
-						_arrVertices.get(j));
-				disCurr.add(new PathSegment(_arrVertices.get(j), e));
+				paths[i][j] = new Vector<>();
+			}
+		}
+		for (int i = 0; i < V; i++)
+			for (int j = 0; j < V; j++) {
+				buildFWPath(i, j, parent, paths);
+				segments.add(paths[i][j]);
 			}
 
-		}
 		return segments;
+	}
+
+	public void buildFWPath(int u, int v, Edge[][] parent, Vector<PathSegment>[][] segments) {
+		if (segments[u][v].size() != 0)
+			return;
+		if (u == v) {
+			segments[u][v].add(new PathSegment(_arrVertices.get(u), null));
+			return;
+		}
+		Edge e = parent[u][v];
+		if(e==null)
+			return;
+		Vector<PathSegment> curr = segments[u][v];
+		int k = e._verFirstVertex.getIdx();
+		if (e._verFirstVertex == _arrVertices.get(v)) {
+			k = e._verSecondVertex.getIdx();
+		}
+		buildFWPath(u, k, parent, segments);
+		for (PathSegment ps : segments[u][k]) {
+			curr.add(ps);
+		}
+		curr.remove(curr.size() - 1);
+		curr.add(new PathSegment(_arrVertices.get(k), e));
+		curr.add(new PathSegment(_arrVertices.get(v), null));
 	}
 
 }
