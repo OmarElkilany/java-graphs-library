@@ -29,7 +29,7 @@ public class Testing {
 		*/
 		System.out.println();
 		System.out.println("testing MST");
-		runTestCase5();
+		//runTestCase5();
 		System.out.println();
 		System.out.println();
 		System.out.println("testing BF");
@@ -164,7 +164,7 @@ public class Testing {
 	}
 	static void runTestCase5() throws GraphException {
 		Graph g = new Graph();
-		
+		/*
 		g.insertVertex("A", "A", 0, 0);
 		g.insertVertex("B", "B", 0, 0);
 		g.insertVertex("C", "C", 0, 0);
@@ -190,13 +190,7 @@ public class Testing {
 		g.insertEdge("E", "G", "5b", "5b", 5);
 		g.insertEdge("E", "H", "2b", "2b", 2);
 		g.insertEdge("F", "H", "6", "6", 6);
-		
-		Vector<PathSegment> seg= g.minSpanningTree();
-
-		System.out.println(seg);
-	}
-	static void runTestCase6() throws GraphException {
-		Graph g = new Graph();
+		*/
 		g.insertVertex("1", "1", 0, 0);
 		g.insertVertex("2", "2", 0, 0);
 		g.insertVertex("3", "3", 0, 0);
@@ -212,7 +206,39 @@ public class Testing {
 		g.insertEdge("2", "5", "4", "4", 4);
 		g.insertEdge("4", "5", "58", "58", 58);
 		g.insertEdge("3", "5", "34", "34", 34);
-		Vector<Vector<PathSegment>> seg= g.findShortestPathBF("4");
+		
+		Vector<PathSegment> seg= g.minSpanningTree();
+
+		System.out.println(seg);
+	}
+	static void runTestCase6() throws GraphException {
+		Graph g = new Graph();
+		g.insertVertex("A", "A", 0, 0);
+		g.insertVertex("B", "B", 0, 0);
+		g.insertVertex("C", "C", 0, 0);
+		g.insertVertex("D", "D", 0, 0);
+		g.removeVertex("C");
+		g.insertVertex("E", "E", 0, 0);
+		g.insertVertex("F", "F", 0, 0);
+		g.insertVertex("G", "G", 0, 0);
+		g.insertVertex("H", "H", 0, 0);
+		g.insertVertex("C", "C", 0, 0);
+		
+		g.insertEdge("A", "C", "5", "5", 5);
+		g.insertEdge("A", "D", "2", "2", 2);
+		
+		g.insertEdge("C", "G", "4", "4", 4);
+		
+		g.insertEdge("B", "D", "4b", "4b", 4);
+		g.insertEdge("B", "F", "8", "8", 8);
+		
+		g.insertEdge("D", "E", "3", "3", 3);
+		g.insertEdge("D", "H", "7", "7", 7);
+		
+		g.insertEdge("E", "G", "5b", "5b", 5);
+		g.insertEdge("E", "H", "2b", "2b", 2);
+		g.insertEdge("F", "H", "6", "6", 6);
+		Vector<Vector<PathSegment>> seg= g.findShortestPathBF("C");
 		for(Vector<PathSegment>v: seg) {
 			for(PathSegment p: v) {
 				System.out.print(p);

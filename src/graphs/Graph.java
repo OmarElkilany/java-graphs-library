@@ -600,8 +600,7 @@ public class Graph {
 		for (Edge e : edges) {
 			int u = e._verFirstVertex.getIdx(), v = e._verSecondVertex.getIdx();
 			if (dsu.union(u, v)) {
-				mst.add(new PathSegment(e._verFirstVertex, e));
-				// mst.add(new PathSegment(e._verSecondVertex, e));
+				mst.add(new PathSegment(null, e));
 			}
 		}
 
@@ -623,6 +622,11 @@ public class Graph {
 				s = i;
 				break;
 			}
+		
+		if (s == -1) {
+			throw new GraphException("Vertex not found!");
+		}
+		
 		dist[s] = 0;
 		// relax all E edges V-1 times
 		Edge[] parent = new Edge[V];
