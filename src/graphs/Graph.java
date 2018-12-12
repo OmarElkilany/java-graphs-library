@@ -12,7 +12,7 @@ import java.util.Vector;
 
 public class Graph {
 
-	private static final String version = "1.0.0";
+	private static final String version = "2.0.0";
 	protected ArrayList<Vertex> _arrVertices;
 
 	private ArrayList<Edge> _arrEdges;
@@ -97,6 +97,14 @@ public class Graph {
 		if (vertexToDelete == null) {
 			throw new GraphException("Vertex to delete not found");
 		}
+		
+		int verIdx = vertexToDelete.getIdx();
+		
+		for(Vertex v : _arrVertices){
+			if(v.getIdx() > verIdx){
+				v.idx--;
+			}
+		}
 
 		// retrieve the nodes connected to the vertex-to-delete
 		LinkedList<AdjacentVertexNode> connectedNodes = vertexToDelete.getAdjacencyList();
@@ -109,7 +117,8 @@ public class Graph {
 			// loop over the connected node's adjacency list
 			for (AdjacentVertexNode connectedNodeListEntry : connectedNodeList) {
 				if (connectedNodeListEntry.getAdjacentVertex().equals(vertexToDelete)) {
-					// remove the node of the vertex-to-delete from the adjacency list of the
+					// remove the node of the vertex-to-delete from the
+					// adjacency list of the
 					// connected node
 					connectedNodeList.remove(connectedNodeListEntry);
 					break;
@@ -502,7 +511,8 @@ public class Graph {
 	private Vertex[] closestPairHelper(ArrayList<Vertex> pointsXSorted, ArrayList<Vertex> pointsYSorted) {
 		Vertex[] result = new Vertex[2];
 
-		// if the number of elements in the arraylist is less than 3, just find the pair
+		// if the number of elements in the arraylist is less than 3, just find
+		// the pair
 		// using brute-force
 		if (pointsXSorted.size() <= 3) {
 			double minDistance = Double.MAX_VALUE;
@@ -591,9 +601,10 @@ public class Graph {
 			int u = e._verFirstVertex.getIdx(), v = e._verSecondVertex.getIdx();
 			if (dsu.union(u, v)) {
 				mst.add(new PathSegment(e._verFirstVertex, e));
-				mst.add(new PathSegment(e._verSecondVertex, e));
+				// mst.add(new PathSegment(e._verSecondVertex, e));
 			}
 		}
+
 		return mst;
 	}
 
@@ -635,11 +646,11 @@ public class Graph {
 		return segments;
 	}
 
-	public void buildBFPath(int u, Edge[] parent, Vector<Vector<PathSegment>> segments) {
+	private void buildBFPath(int u, Edge[] parent, Vector<Vector<PathSegment>> segments) {
 		if (segments.get(u).size() != 0)
 			return;
 		Edge e = parent[u];
-		if(e==null)
+		if (e == null)
 			return;
 		Vector<PathSegment> curr = segments.get(u);
 		int v = e._verFirstVertex.getIdx();
@@ -659,6 +670,7 @@ public class Graph {
 	// programming algorithm and returns all such paths. Use
 	// Edge._nEdgeCost attribute in finding the shortest path
 	// [35 pts]
+	@SuppressWarnings("unchecked")
 	public Vector<Vector<PathSegment>> findAllShortestPathsFW() throws GraphException {
 		int V = _arrVertices.size();
 		int[][] dist = new int[V][V];
@@ -702,7 +714,7 @@ public class Graph {
 		return segments;
 	}
 
-	public void buildFWPath(int u, int v, Edge[][] parent, Vector<PathSegment>[][] segments) {
+	private void buildFWPath(int u, int v, Edge[][] parent, Vector<PathSegment>[][] segments) {
 		if (segments[u][v].size() != 0)
 			return;
 		if (u == v) {
@@ -710,7 +722,7 @@ public class Graph {
 			return;
 		}
 		Edge e = parent[u][v];
-		if(e==null)
+		if (e == null)
 			return;
 		Vector<PathSegment> curr = segments[u][v];
 		int k = e._verFirstVertex.getIdx();
